@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lnmp-mysql-deployment
+  labels:
+    app: lnmp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lnmp
+  template:
+    metadata:
+      labels:
+        app: lnmp
+    spec:
+      containers:
+      - name: lnmp-mysql-deployment
+        image: mysql:5.7
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: root
+        - name: MYSQL_DATABASE
+          value: test_db
+        - name: TZ
+          value: 'Asia/Tokyo'
+        ports:
+        - containerPort: 3306
+        args:
+        - mysqld
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_unicode_ci
+        # commandじゃねーんだ
+        # command: ['mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci']
+        volumeMounts:
+        # mysqlストレージ用パス
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+        # my.cnf共有パス
+        - name: mysql-config
+          # my.cnfの配置先
+          mountPath: /etc/mysql/conf.d
+      volumes:
+      # mysqlの永続化ボリューム
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+      # mysql設定のinject
+      - name: mysql-config
+        configMap:
+          name: mysql-config
+          items:
+          - key: my.cnf
+            # マウントしたボリュームのmountPath配下に、どういう階層で登録されるかを記載
+            path: my.cnf
+            mode: 0644

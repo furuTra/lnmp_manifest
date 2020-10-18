@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lnmp-nginx-deployment
+  labels:
+    app: lnmp
+spec:
+  # レプリケーション設定、今回は1台のみの構成とする
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      # 配置するnginxコンテナ
+      containers:
+      - name: lnmp-nginx-deployment
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-persistent-storage
+          mountPath: /var/www
+        # default.conf共有パス
+        - name: nginx-config
+          # default.confの配置先
+          mountPath: /etc/nginx/conf.d
+      volumes:
+        # nginxの永続化ボリューム
+        - name: nginx-persistent-storage
+          persistentVolumeClaim:
+            claimName: php-server-pv-claim
+        # nginx設定のinject
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+            items:
+            - key: default.conf
+              # マウントしたボリュームのmountPath配下に、どういう階層で登録されるかを記載
+              path: default.conf
+              mode: 0777
