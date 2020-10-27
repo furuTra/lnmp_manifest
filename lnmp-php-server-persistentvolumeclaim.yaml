@@ -8,11 +8,14 @@ metadata:
 spec:
   storageClassName: manual
   capacity:
+    # とりあえず100Miくらいの容量で試す
     storage: 100Mi
+  # ホストないに作成したストレージへ、Kubernetes nodeがアクセスする際の制約事項
+  # 今回は、単一のnodeのみに書き込み/読み込みを可能とする設定とした
   accessModes:
     - ReadWriteOnce
   hostPath:
-    # 
+    # ホストマシンのどこにストレージを割り当てるか
     path: '/root/src/lnmp/server'
 ---
 # PVC
