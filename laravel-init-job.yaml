@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: laravel-init-job
+  labels:
+    app: lnmp
+spec:
+  # One Shot Task
+  completions: 1
+  parallelism: 1
+  backoffLimit: 0
+  # 実行後30sでJob実行Podを削除
+  ttlSecondsAfterFinished: 30
+  template:
+    metadata:
+      labels:
+        app: lnmp
+    spec:
+      containers:
+      - name: laravel-init
+        image: laravel
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+          - "composer create-project --prefer-dist laravel/laravel '' \
+            && chmod 777 -R ./storage/ \
+            && chmod 777 -R ./bootstrap/"
+        volumeMounts:
+          - name: php-persistent-storage
+            mountPath: /var/www
+      restartPolicy: Never
+      volumes:
+      - name: php-persistent-storage
+        persistentVolumeClaim:
+          claimName: php-server-pv-claim
