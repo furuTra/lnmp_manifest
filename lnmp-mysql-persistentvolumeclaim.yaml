@@ -1,4 +1,3 @@
-# PV, PVCはセットでないとだめなのね
 kind: PersistentVolume
 apiVersion: v1
 metadata:
@@ -12,7 +11,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    # 最初、'./mysql/db/data'としていたらエラー
+    # プルパスで記載しないとエラーになった
     path: '/root/src/lnmp/mysql/db/data'
 ---
 apiVersion: v1
