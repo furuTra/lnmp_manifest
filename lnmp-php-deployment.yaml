@@ -29,3 +29,11 @@ spec:
       - name: php-persistent-storage
         persistentVolumeClaim:
           claimName: php-server-pv-claim
+      # laravel .envをinject
+      - name: laravel-env
+        configMap:
+          name: laravel-env
+          items:
+          - key: .env
+            path: .env
+            mode: 0644
