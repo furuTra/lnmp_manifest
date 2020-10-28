@@ -22,8 +22,11 @@ spec:
         ports:
         - containerPort: 9000
         volumeMounts:
-          - name: php-persistent-storage
-            mountPath: /var/www
+        - name: php-persistent-storage
+          mountPath: /var/www
+        - name: laravel-env
+          mountPath: /var/www/.env
+          subPath: .env
       volumes:
       # サーバーログ出力先(nginxと共有)
       - name: php-persistent-storage
