@@ -23,6 +23,7 @@ spec:
         command:
           - sh
           - -c
+        args:
           - "composer create-project --prefer-dist laravel/laravel '' \
             && chmod 777 -R ./storage/ \
             && chmod 777 -R ./bootstrap/"
